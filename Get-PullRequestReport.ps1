@@ -4,7 +4,7 @@
         1. patToken - PAT token must created in Github with repository read permission.
                       This PAT token should be saves as Github secrets if Github action is used to run this script.
         2. emailFrom - An Outlook email id which will be used to send the email. This is the username for smtp server - "smtp-mail.outlook.com"
-        3. emailPassword - Password of the Outlook email Id in secure string
+        3. emailPassword - Password of the Outlook email Id
         4. emailTo - Receiver's email address.
 
     Note: We can create a pipeline in Github actions and schedule it to run weekly.
@@ -19,7 +19,7 @@ param(
     $emailFrom,
 
     [Parameter(Mandatory = $true, HelpMessage = "Outlook email's password")]
-    [SecureString]
+    [String]
     $emailPassword,
 
     [Parameter(Mandatory = $true, HelpMessage = "Email receiver Address")]
@@ -107,7 +107,8 @@ TD {border-width: 1px; padding: 3px; border-style: solid; border-color: black;}
 $content = $header + $summaryBody + "<br>" + $prBody + "<br>" + $openPrBody + "</body></html>"
 
 $subject = "Pull request summary report for last week"
-$credential = New-Object System.Management.Automation.PSCredential $emailFrom, $emailPassword
+$password = ConvertTo-SecureString -force -AsPlainText -string $emailPassword
+$credential = New-Object System.Management.Automation.PSCredential $emailFrom, $password
 $emailParameters = @{
     From        = $emailFrom
     To          = $emailTo
